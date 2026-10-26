@@ -1,0 +1,17 @@
+target/
+build/
+.classpath
+.project
+.settings/
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*
+!.env.example
+application-local.properties
+application-secret.properties
+*.class

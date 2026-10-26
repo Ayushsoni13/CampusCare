@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusCare | Campus Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="brand">
+        <div class="brand-icon">C</div>
+        <div>
+            <h1>CampusCare</h1>
+            <p>Campus Complaint & Maintenance Management</p>
+        </div>
+    </div>
+
+    <div class="server-status">
+        <span class="status-dot"></span>
+        Backend: localhost:8082
+    </div>
+</header>
+
+<div class="layout">
+    <aside class="sidebar">
+        <p class="menu-heading">MAIN MENU</p>
+        <button class="nav-button active" data-section="dashboard">Dashboard</button>
+        <button class="nav-button" data-section="students">Students</button>
+        <button class="nav-button" data-section="staff">Maintenance Staff</button>
+        <button class="nav-button" data-section="complaints">Complaints</button>
+        <button class="nav-button" data-section="history">Complaint History</button>
+        <button class="nav-button" data-section="soap">SOAP Statistics</button>
+
+        <div class="sidebar-note">
+            <strong>CampusCare</strong>
+            <p>Manage campus complaints and maintenance activities in one place.</p>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <div id="messageBox" class="message-box hidden"></div>
+
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="page-section active-section">
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">OVERVIEW</p>
+                    <h2>Dashboard</h2>
+                    <p class="muted">Manage students, staff, and campus complaints.</p>
+                </div>
+                <button class="primary-button" id="refreshDashboard">Refresh Dashboard</button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <p>Total Students</p>
+                    <h3 id="studentCount">—</h3>
+                </div>
+                <div class="stat-card">
+                    <p>Maintenance Staff</p>
+                    <h3 id="staffCount">—</h3>
+                </div>
+                <div class="stat-card">
+                    <p>Total Complaints</p>
+                    <h3 id="complaintCount">—</h3>
+                </div>
+                <div class="stat-card">
+                    <p>Resolved Complaints</p>
+                    <h3 id="resolvedCount">—</h3>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <h3>Recent Complaints</h3>
+                        <p class="muted">The latest complaints retrieved from the backend.</p>
+                    </div>
+                    <button class="secondary-button" data-go="complaints">Manage Complaints</button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="recentComplaintsBody">
+                        <tr><td colspan="5" class="empty-state">Loading complaints...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- STUDENTS -->
+        <section id="students" class="page-section">
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">USER MANAGEMENT</p>
+                    <h2>Students</h2>
+                    <p class="muted">Create, view, update, search, and delete student records.</p>
+                </div>
+                <button class="secondary-button" id="refreshStudents">Refresh List</button>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <h3 id="studentFormTitle">Add Student</h3>
+                    <button class="text-button" id="cancelStudentEdit" hidden>Cancel Edit</button>
+                </div>
+
+                <form id="studentForm" class="form-grid">
+                    <input type="hidden" id="studentId">
+
+                    <label>
+                        Full Name *
+                        <input type="text" id="studentName" required>
+                    </label>
+
+                    <label>
+                        Email *
+                        <input type="email" id="studentEmail" required>
+                    </label>
+
+                    <label>
+                        Department
+                        <input type="text" id="studentDepartment">
+                    </label>
+
+                    <label>
+                        Phone
+                        <input type="text" id="studentPhone">
+                    </label>
+
+                    <div class="form-actions full-width">
+                        <button type="submit" class="primary-button" id="studentSubmitButton">Add Student</button>
+                        <button type="reset" class="secondary-button">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <h3>Student Records</h3>
+                        <p class="muted">Use the ID field to retrieve an individual student.</p>
+                    </div>
+                </div>
+
+                <form id="studentSearchForm" class="search-row">
+                    <input type="number" id="studentSearchId" min="1" placeholder="Enter student ID">
+                    <button class="primary-button" type="submit">Find by ID</button>
+                    <button class="secondary-button" type="button" id="showAllStudents">Show All</button>
+                </form>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Phone</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="studentsBody">
+                        <tr><td colspan="6" class="empty-state">Loading students...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- STAFF -->
+        <section id="staff" class="page-section">
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">TEAM MANAGEMENT</p>
+                    <h2>Maintenance Staff</h2>
+                    <p class="muted">Manage staff details and specializations.</p>
+                </div>
+                <button class="secondary-button" id="refreshStaff">Refresh List</button>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <h3 id="staffFormTitle">Add Maintenance Staff</h3>
+                    <button class="text-button" id="cancelStaffEdit" hidden>Cancel Edit</button>
+                </div>
+
+                <form id="staffForm" class="form-grid">
+                    <input type="hidden" id="staffId">
+
+                    <label>
+                        Full Name *
+                        <input type="text" id="staffName" required>
+                    </label>
+
+                    <label>
+                        Email *
+                        <input type="email" id="staffEmail" required>
+                    </label>
+
+                    <label>
+                        Specialization
+                        <input type="text" id="staffSpecialization" placeholder="Electrical, Plumbing, IT...">
+                    </label>
+
+                    <label>
+                        Phone
+                        <input type="text" id="staffPhone">
+                    </label>
+
+                    <div class="form-actions full-width">
+                        <button type="submit" class="primary-button" id="staffSubmitButton">Add Staff</button>
+                        <button type="reset" class="secondary-button">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <h3>Maintenance Staff Records</h3>
+                </div>
+
+                <form id="staffSearchForm" class="search-row">
+                    <input type="number" id="staffSearchId" min="1" placeholder="Enter staff ID">
+                    <button class="primary-button" type="submit">Find by ID</button>
+                    <button class="secondary-button" type="button" id="showAllStaff">Show All</button>
+                </form>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Specialization</th>
+                            <th>Phone</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="staffBody">
+                        <tr><td colspan="6" class="empty-state">Loading staff...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPLAINTS -->
+        <section id="complaints" class="page-section">
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">CAMPUS SERVICES</p>
+                    <h2>Complaints</h2>
+                    <p class="muted">Submit complaints and manage their assignment and status.</p>
+                </div>
+                <button class="secondary-button" id="refreshComplaints">Refresh List</button>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <h3 id="complaintFormTitle">Submit Complaint</h3>
+                    <button class="text-button" id="cancelComplaintEdit" hidden>Cancel Edit</button>
+                </div>
+
+                <form id="complaintForm" class="form-grid">
+                    <input type="hidden" id="complaintId">
+
+                    <label>
+                        Student ID *
+                        <input type="number" id="complaintStudentId" min="1" required>
+                    </label>
+
+                    <label>
+                        Complaint Title *
+                        <input type="text" id="complaintTitle" required>
+                    </label>
+
+                    <label>
+                        Category *
+                        <select id="complaintCategory" required>
+                            <option value="">Select category</option>
+                            <option value="ELECTRICAL">Electrical</option>
+                            <option value="PLUMBING">Plumbing</option>
+                            <option value="CLEANLINESS">Cleanliness</option>
+                            <option value="IT">IT / Network</option>
+                            <option value="FURNITURE">Furniture</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </label>
+
+                    <label>
+                        Location *
+                        <input type="text" id="complaintLocation" required placeholder="e.g. Block A, Room 101">
+                    </label>
+
+                    <label>
+                        Priority
+                        <select id="complaintPriority">
+                            <option value="LOW">Low</option>
+                            <option value="MEDIUM" selected>Medium</option>
+                            <option value="HIGH">High</option>
+                            <option value="URGENT">Urgent</option>
+                        </select>
+                    </label>
+
+                    <label class="full-width">
+                        Description *
+                        <textarea id="complaintDescription" rows="4" required></textarea>
+                    </label>
+
+                    <div class="form-actions full-width">
+                        <button type="submit" class="primary-button" id="complaintSubmitButton">Submit Complaint</button>
+                        <button type="reset" class="secondary-button">Clear Form</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <h3>Complaint Records</h3>
+                        <p class="muted">Search by ID or filter by status/category.</p>
+                    </div>
+                </div>
+
+                <form id="complaintSearchForm" class="search-row">
+                    <input type="number" id="complaintSearchId" min="1" placeholder="Enter complaint ID">
+                    <button class="primary-button" type="submit">Find by ID</button>
+                    <button class="secondary-button" type="button" id="showAllComplaints">Show All</button>
+                </form>
+
+                <div class="filter-row">
+                    <label>
+                        Filter by Status
+                        <select id="statusFilter">
+                            <option value="">All statuses</option>
+                            <option value="SUBMITTED">Submitted</option>
+                            <option value="ASSIGNED">Assigned</option>
+                            <option value="IN_PROGRESS">In Progress</option>
+                            <option value="RESOLVED">Resolved</option>
+                            <option value="CLOSED">Closed</option>
+                        </select>
+                    </label>
+
+                    <label>
+                        Filter by Category
+                        <select id="categoryFilter">
+                            <option value="">All categories</option>
+                            <option value="ELECTRICAL">Electrical</option>
+                            <option value="PLUMBING">Plumbing</option>
+                            <option value="CLEANLINESS">Cleanliness</option>
+                            <option value="IT">IT / Network</option>
+                            <option value="FURNITURE">Furniture</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </label>
+
+                    <button type="button" class="secondary-button" id="applyComplaintFilters">Apply Filters</button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Student ID</th>
+                            <th>Category</th>
+                            <th>Location</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Staff ID</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="complaintsBody">
+                        <tr><td colspan="9" class="empty-state">Loading complaints...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <h3>Complaint Actions</h3>
+                        <p class="muted">Assign a staff member or change the status of a complaint.</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <label>
+                        Complaint ID *
+                        <input type="number" id="actionComplaintId" min="1" required>
+                    </label>
+
+                    <label>
+                        Assign to Staff ID *
+                        <input type="number" id="assignStaffId" min="1">
+                    </label>
+
+                    <div class="form-actions">
+                        <button type="button" class="primary-button" id="assignStaffButton">Assign Staff</button>
+                    </div>
+
+                    <label>
+                        New Status *
+                        <select id="newComplaintStatus">
+                            <option value="SUBMITTED">Submitted</option>
+                            <option value="ASSIGNED">Assigned</option>
+                            <option value="IN_PROGRESS">In Progress</option>
+                            <option value="RESOLVED">Resolved</option>
+                            <option value="CLOSED">Closed</option>
+                        </select>
+                    </label>
+
+                    <label>
+                        Remarks
+                        <input type="text" id="statusRemarks" placeholder="Add status-change remarks">
+                    </label>
+
+                    <div class="form-actions">
+                        <button type="button" class="primary-button" id="updateComplaintStatusButton">Update Status</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPLAINT HISTORY -->
+        <section id="history" class="page-section">
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">AUDIT TRAIL</p>
+                    <h2>Complaint History</h2>
+                    <p class="muted">View recorded status changes for a complaint.</p>
+                </div>
+            </div>
+
+            <div class="panel">
+                <form id="historyForm" class="search-row">
+                    <input type="number" id="historyComplaintId" min="1" required placeholder="Enter complaint ID">
+                    <button class="primary-button" type="submit">Load History</button>
+                </form>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>History ID</th>
+                            <th>Complaint ID</th>
+                            <th>Old Status</th>
+                            <th>New Status</th>
+                            <th>Remarks</th>
+                            <th>Changed At</th>
+                        </tr>
+                        </thead>
+                        <tbody id="historyBody">
+                        <tr><td colspan="6" class="empty-state">Enter a complaint ID to view its history.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SOAP -->
+        <section id="soap" class="page-section">
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">SOAP WEB SERVICE</p>
+                    <h2>Complaint Statistics</h2>
+                    <p class="muted">Retrieve complaint counts through the SOAP service.</p>
+                </div>
+                <button class="primary-button" id="loadSoapStats">Load SOAP Statistics</button>
+            </div>
+
+            <div class="panel">
+                <h3>SOAP Service Information</h3>
+                <p><strong>Endpoint:</strong> <code>/ws</code></p>
+                <p><strong>WSDL:</strong> <code>/ws/complaintService.wsdl</code></p>
+                <p class="muted">
+                    This section requires the SOAP servlet, endpoint, and WSDL configuration to be working.
+                </p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card"><p>Total Complaints (SOAP)</p><h3 id="soapTotal">—</h3></div>
+                <div class="stat-card"><p>Submitted</p><h3 id="soapSubmitted">—</h3></div>
+                <div class="stat-card"><p>Assigned</p><h3 id="soapAssigned">—</h3></div>
+                <div class="stat-card"><p>In Progress</p><h3 id="soapInProgress">—</h3></div>
+                <div class="stat-card"><p>Resolved</p><h3 id="soapResolved">—</h3></div>
+                <div class="stat-card"><p>Closed</p><h3 id="soapClosed">—</h3></div>
+            </div>
+
+            <div class="panel">
+                <h3>SOAP Response</h3>
+                <pre id="soapResponse" class="soap-response">Click "Load SOAP Statistics" to call the SOAP endpoint.</pre>
+            </div>
+        </section>
+
+        <footer>
+            CampusCare &copy; 2026 | Spring Boot REST API + SOAP + MySQL
+        </footer>
+    </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://campuscare.com/soap/complaints"
+    xmlns:tns="http://campuscare.com/soap/complaints"
+    elementFormDefault="qualified">
+
+    <xs:element name="GetComplaintStatisticsRequest">
+        <xs:complexType/>
+    </xs:element>
+
+    <xs:element name="GetComplaintStatisticsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="totalComplaints" type="xs:long"/>
+                <xs:element name="submittedComplaints" type="xs:long"/>
+                <xs:element name="assignedComplaints" type="xs:long"/>
+                <xs:element name="inProgressComplaints" type="xs:long"/>
+                <xs:element name="resolvedComplaints" type="xs:long"/>
+                <xs:element name="closedComplaints" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
